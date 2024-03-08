@@ -1,0 +1,109 @@
+1.Explain how FastAPI handles asynchronous requests and its
+benefits over synchronous code in Python.
+
+
+FastAPI revolutionizes request handling in Python by embracing asynchronous programming paradigms. 
+Asynchronous capabilities empower FastAPI to juggle multiple requests simultaneously without halting the execution flow. 
+This non-blocking approach ensures that the server can swiftly proceed with other tasks while waiting for I/O-bound operations, 
+like accessing databases or making HTTP requests, to complete.
+
+The allure of FastAPI's asynchronous prowess lies in its ability to enhance scalability and responsiveness. 
+By adeptly managing concurrent requests, FastAPI optimizes resource utilization, thus elevating performance and responsiveness,
+ particularly in scenarios of high demand. Furthermore, asynchronous execution minimizes latency by curtailing idle periods associated with waiting for I/O operations to finalize.
+
+FastAPI's asynchronous prowess also extends to handling protracted tasks with finesse. 
+Rather than stalling other requests while tackling time-consuming operations, FastAPI gracefully delegates such tasks to run asynchronously. 
+Consequently, the server can maintain its momentum by processing other requests without being bogged down.
+
+In essence, FastAPI's embrace of asynchronous programming empowers developers to craft APIs that excel in scalability, 
+responsiveness, and overall performance. By leveraging asynchronous capabilities, FastAPI facilitates the creation of agile, high-performing APIs that cater to modern-day demands with aplomb.
+
+
+
+
+
+
+
+
+
+
+
+2.Describe how dependency injection works in FastAPI and give an
+example of its practical use.
+
+FastAPI allows you to inject BackgroundTasks directly into your endpoint functions. 
+This enables you to enqueue background tasks for asynchronous execution without blocking the response to the client. 
+By including BackgroundTasks as a parameter in your endpoint function, FastAPI automatically handles the instantiation and injection of the BackgroundTasks object when the endpoint is called.
+
+FastAPI's Depends mechanism enables you to declare dependencies that need to be resolved before executing an endpoint function. 
+This could include authentication, database connections, or any other resources required by your endpoint. FastAPI takes care of resolving these dependencies and passing them to your endpoint function.
+
+
+from fastapi import FastAPI, BackgroundTasks
+
+# Initialize FastAPI application
+app = FastAPI()
+
+# Endpoint utilizing BackgroundTasks injection
+@app.post("/dynamic-test-email/{book_id}/", status_code=201)
+def test_email_confirmation(book_id: int, background_tasks: BackgroundTasks):
+    # Enqueue background task to send confirmation email
+    background_tasks.add_task(send_confirmation_email, book_id)
+    return {"message": f"A test email task for book {book_id} has been scheduled successfully"}
+
+
+
+In this example, when the /dynamic-test-email/{book_id}/ endpoint is called, FastAPI automatically injects an instance of BackgroundTasks into the background_tasks parameter. 
+This allows you to enqueue background tasks seamlessly without explicitly managing the instantiation of BackgroundTasks objects.
+
+
+
+
+3.Code Walkthrough
+Setting the Stage:
+
+We kick off our journey by importing the required modules: FastAPI for building our API, HTTPException for handling HTTP errors, BackgroundTasks for running tasks in the background, Depends for dependency injection, BaseModel from Pydantic for data validation, sqlite3 for SQLite database operations, asyncio for handling asynchronous tasks, random for generating random numbers, and requests for making HTTP requests.
+We then initialize our FastAPI application.
+Establishing Database Connectivity:
+
+Our journey begins with establishing a connection to our SQLite database. We define a function elaunch_new_database_connection() for this purpose.
+To ensure that our database is ready for action, we create another function set_database() to set up the necessary tables (books and reviews) if they don't already exist.
+Modeling Data:
+
+To ensure the integrity of our data, we define two Pydantic models: NewBookModel and NewReviewModel. These models specify the structure and validation rules for incoming data related to books and reviews.
+Crafting Endpoints:
+
+We embark on the creation of our API endpoints, each designed to handle specific tasks.
+We create an endpoint add_original_book() to add new books to our database. It validates the incoming data using the NewBookModel, inserts the book details into the books table, and returns a success message along with the book ID.
+Another endpoint add_authentic_review_for_book() allows users to add reviews for existing books. It verifies the existence of the specified book, inserts the review details into the reviews table, and schedules a background task to send a confirmation email.
+Additional endpoints are created for listing books (list_books()) and reviews (list_reviews()), allowing users to retrieve data from the database.
+Enabling Background Tasks:
+
+We introduce a background task send_confirmation_email() to simulate the sending of confirmation emails after adding reviews. This task introduces an element of asynchronicity to our application, enhancing its responsiveness.
+Testing the Waters:
+
+We provide a dedicated endpoint automate_test_endpoint_book() for automating the testing process. This endpoint facilitates the testing of various functionalities such as adding books, listing books, adding reviews, and listing reviews.
+Additionally, we include an endpoint test_email_confirmation() to test the background task functionality by scheduling a test email task.
+Navigating the Code Flow:
+
+As requests pour into our API, FastAPI meticulously routes each request to the appropriate endpoint based on the URL pattern.
+The endpoint functions execute their designated logic, interacting with the database, performing data validation, and orchestrating background tasks as necessary.
+Upon completion, the endpoints send back responses containing the requested data or error messages, guiding users through the journey of interacting with our API.
+
+
+
+
+short way:
+Initialization: We import necessary modules and initialize FastAPI.
+
+Database Setup: We establish a connection to SQLite and create required tables.
+
+Data Models: Pydantic models define the structure and validation rules for book and review data.
+
+API Endpoints: Endpoints are created to add books, add reviews, list books, and list reviews.
+
+Background Tasks: A task to simulate sending confirmation emails is included.
+
+Testing: An endpoint facilitates automated testing of various functionalities.
+
+Code Flow: Requests are routed to appropriate endpoints, executing logic and returning responses.
